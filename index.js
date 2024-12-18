@@ -6,6 +6,7 @@ const passport = require("passport");
 
 
 const userRoutes = require("./routes/authRoutes");
+const quizRoutes = require("./routes/quizRoutes");
 
 const app = express();
 dotenv.config();
@@ -27,5 +28,6 @@ app.use(passport.session());
 
 //routes
 app.use("/auth", userRoutes);
+app.use("/quiz", quizRoutes);
 
 module.exports = app;

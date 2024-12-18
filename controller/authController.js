@@ -21,11 +21,16 @@ const getUsers = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { name, password, age } = req.body;
+  const { name, password, age, role } = req.body;
 
   // Validate request data
   if (!name || !password || !age) {
     return res.status(400).json({ message: "Name, password, and age are required" });
+  }
+
+  const allowedRoles = ["user", "admin", "editor"]; // Define allowed roles
+  if (role && !allowedRoles.includes(role)) {
+    return res.status(400).json({ message: "Invalid role specified" });
   }
 
   try {
@@ -33,11 +38,14 @@ const createUser = async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newUser = new UserModel({ name, password: hashedPassword,  age });
+    // Assign a default role if none provided
+    const userRole = role || "user";
+
+    const newUser = new UserModel({ name, password: hashedPassword,  age, role: userRole });
 
     const savedUser = await newUser.save();
     
-    res.status(201).json({ message: "User created successfully", user: savedUser });
+    res.status(201).json({ message: `${name} your account has been created successfully`});
   } catch (error) {
     if (error.code === 11000) {
       // Duplicate key error
